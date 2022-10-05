@@ -128,6 +128,42 @@ public class LoginActivity extends AppCompatActivity {
         loadingBar.show();
 
         // send reset password email
-        
+       mAuth.sendPasswordResetEmail(emaill).addOnCompleteListener(new OnCompleteListener<Void>() {
+           @Override
+           public void onComplete(@NonNull Task<Void> task) {
+               loadingBar.dismiss();
+               if (task.isSuccessful()) {
+                   Toast.makeText(LoginActivity.this, "Done sent", Toast.LENGTH_LONG).show();
+               } else {
+                   Toast.makeText(LoginActivity.this, "Error Occurred", Toast.LENGTH_LONG).show();
+               }
+           }
+       }) .addOnFailureListener(new OnFailureListener() {
+           @Override
+           public void onFailure(@NonNull Exception e) {
+               loadingBar.dismiss();
+               Toast.makeText(LoginActivity.this, "Error Failed", Toast.LENGTH_LONG).show();
+           }
+       });
+    }
+    private void loginUser(String emaill, String pass){
+        loadingBar.setMessage("Logging In...");
+        loadingBar.show();
+
+        // sign in with email and password after authenticating
+        mAuth.signInWithEmailAndPassword(emaill, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>(){
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task){
+                if (task.isSuccessful()){
+                    loadingBar.dismiss();
+                    FirebaseUser user = mAuth.getCurrentUser();
+
+                    if (task.getResult().getAdditionalUserInfo().isNewUser()){
+                        String email = user.getEmail();
+                        String uid = user.getUid();
+                    }
+                }
+            }
+        })
     }
 }
