@@ -17,7 +17,7 @@
         android:text="Sign Up Here"
         android:textColor="@color/black"
         android:textSize="28sp"
-        android:textStyle="bold"/>
+        android:textStyle="italic|bold"/>
 
     <TextView
         android:layout_width="match_parent"
