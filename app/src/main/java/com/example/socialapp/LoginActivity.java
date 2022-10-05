@@ -101,7 +101,7 @@ public class LoginActivity extends AppCompatActivity {
         LinearLayout linearLayout = new LinearLayout(this);
         final EditText emailet = new EditText(this);
         // write your registered email
-        emailet.setText("mbitsiedward@gmail.com");
+        emailet.setText("Email");
         emailet.setMinEms(16);
         emailet.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
         linearLayout.addView(emailet);
@@ -154,16 +154,52 @@ public class LoginActivity extends AppCompatActivity {
         mAuth.signInWithEmailAndPassword(emaill, pass).addOnCompleteListener(new OnCompleteListener<AuthResult>(){
             @Override
             public void onComplete(@NonNull Task<AuthResult> task){
-                if (task.isSuccessful()){
+                if (task.isSuccessful()) {
                     loadingBar.dismiss();
                     FirebaseUser user = mAuth.getCurrentUser();
 
-                    if (task.getResult().getAdditionalUserInfo().isNewUser()){
+                    if (task.getResult().getAdditionalUserInfo().isNewUser()) {
                         String email = user.getEmail();
                         String uid = user.getUid();
+                        HashMap<Object, String> hashMap = new HashMap<>();
+                        hashMap.put("email", email);
+                        hashMap.put("uid", uid);
+                        hashMap.put("name", "");
+                        hashMap.put("onlineStatus", "online");
+                        hashMap.put("typingTo", "noOne");
+                        hashMap.put("phone", "");
+                        hashMap.put("image", "");
+                        hashMap.put("cover", "");
+                        FirebaseDatabase database = FirebaseDatabase.getInstance();
+
+                        // store the value in Database in "Users" Node
+                        DatabaseReference reference = database.getReference("Users");
+
+                        //storing the value in Firebase
+                        reference.child(uid).setValue(hashMap);
                     }
+                    Toast.makeText(LoginActivity.this, "Registered User " + user.getEmail(), Toast.LENGTH_LONG).show();
+                    Intent mainIntent = new Intent(LoginActivity.this, DashboardActivity.class);
+                    mainIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(mainIntent);
+                    finish();
+                } else {
+                    loadingBar.dismiss();
+                    Toast.makeText(LoginActivity.this, "Login Failed", Toast.LENGTH_LONG).show();
                 }
             }
-        })
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                loadingBar.dismiss();
+                Toast.makeText(LoginActivity.this, "Error Occurred", Toast.LENGTH_LONG).show();
+            }
+        });
     }
+
+@Override
+public boolean onSupportNavigateUp() {
+    onBackPressed();
+    return super.onSupportNavigateUp();
+}
 }
