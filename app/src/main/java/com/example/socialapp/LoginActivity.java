@@ -86,5 +86,48 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // Recover Your Password using email
+        recoverpass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showRecoverPasswordDialog();
+            }
+        });
+
+    }
+    private void showRecoverPasswordDialog(){
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Recover Password");
+        LinearLayout linearLayout = new LinearLayout(this);
+        final EditText emailet = new EditText(this);
+        // write your registered email
+        emailet.setText("mbitsiedward@gmail.com");
+        emailet.setMinEms(16);
+        emailet.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        linearLayout.addView(emailet);
+        linearLayout.setPadding(10, 10, 10, 10);
+        builder.setView(linearLayout);
+        builder.setPositiveButton("Recover", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which){
+                String emaill = emailet.getText().toString().trim();
+                beginRecovery(emaill); // sena an email to the mail to recover password
+            }
+        });
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener(){
+            @Override
+            public void onClick(DialogInterface dialog, int which){
+                dialog.dismiss();
+            }
+        });
+        builder.create().show();
+    }
+    private void beginRecovery(String emaill){
+        loadingBar.setMessage("Sensing Email...");
+        loadingBar.setCanceledOnTouchOutside(false);
+        loadingBar.show();
+
+        // send reset password email
+        
     }
 }
