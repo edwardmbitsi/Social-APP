@@ -51,15 +51,22 @@ public class EditProfilePage extends AppCompatActivity {
     private FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     FirebaseDatabase firebaseDatabase;
+    DatabaseReference databaseReference;
     StorageReference storageReference;
     String storagepath = "Users_Profile_Cover_image/";
     String uid;
     ImageView set;
     TextView profilepic, editname, editpassword;
+    ProgressDialog pd;
+    private static final int CAMERA_REQUEST = 100;
+    private static final int STORAGE_REQUEST = 200;
+    private static final int IMAGEPICK_GALLERY_REQUEST = 300;
+    private static final int IMAGE_PICKCAMERA_REQUEST =400;
+
     String uid;
     ImageView set;
     TextView profilepic, editname, editpassword;
     ProgressDialog pd;
-    
+
 
 }
