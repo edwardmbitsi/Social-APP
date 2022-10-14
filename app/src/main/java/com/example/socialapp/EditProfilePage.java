@@ -62,6 +62,36 @@ public class EditProfilePage extends AppCompatActivity {
     private static final int STORAGE_REQUEST = 200;
     private static final int IMAGEPICK_GALLERY_REQUEST = 300;
     private static final int IMAGE_PICKCAMERA_REQUEST =400;
+    String cameraPermission[];
+    String storagePermission[];
+    Uri imageuri;
+    String profileOrCoverPhoto;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_edit_profile_page);
+
+        profilepic = findViewById(R.id.profilepic);
+        editname = findViewById(R.id.editname);
+        set = findViewById(R.id.setting_profile_image);
+        pd = new ProgressDialog(this);
+        pd.setCanceledOnTouchOutside(false);
+        editpassword = findViewById(R.id.changepassword);
+        firebaseAuth = firebaseAuth.getInstance();
+        firebaseUser = firebaseAuth.getCurrentUser();
+        firebaseDatabase = FirebaseDatabase.getInstance();
+        storageReference = FirebaseStorage.getInstance().getReference();
+        databaseReference = firebaseDatabase.getReference("Users");
+        cameraPermission = new String[]{Manifest.permission.CAMERA, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        storagePermission = new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE};
+        Query query = databaseReference.orderByChild("email").equalTo(firebaseUser.getEmail());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+        })
+
+
+    }
 
     String uid;
     ImageView set;
