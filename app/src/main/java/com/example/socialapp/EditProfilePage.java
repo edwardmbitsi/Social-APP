@@ -88,15 +88,53 @@ public class EditProfilePage extends AppCompatActivity {
         Query query = databaseReference.orderByChild("email").equalTo(firebaseUser.getEmail());
         query.addValueEventListener(new ValueEventListener() {
             @Override
-        })
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot){
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                    String IMAGE = "" + dataSnapshot1.child("image").getValue();
 
+                    try{
+                        Glide.with(EditProfilePage.this).load(image).into(set);
+                    } catch (Exception e) {
+                    }
+                }
+            }
 
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError){
+
+            }
+        });
+
+        editpassword.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                pd.setMessage("Changing Password");
+                showPasswordChangeDialog();
+            }
+        });
     }
 
-    String uid;
-    ImageView set;
-    TextView profilepic, editname, editpassword;
-    ProgressDialog pd;
+    @Override
+    protected void onStart(){
+        super.onStart();
+        Query query = databaseReference.orderByChild("email").equalTo(firebaseUser.getEmail());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
 
+                    String image = "" + dataSnapshot1.child("image").getValue();
 
+                    try {
+                        Glide.with(EditProfilePage.this).load(image).into(set);
+                    } catch (Exception e) {
+                    }
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        })
+    }
 }
