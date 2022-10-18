@@ -109,7 +109,7 @@ public class EditProfilePage extends AppCompatActivity {
             @Override
             public void onClick(View v){
                 pd.setMessage("Changing Password");
-                showPasswordChangeDialog();
+                showPasswordChangeDailog();
             }
         });
     }
@@ -135,6 +135,100 @@ public class EditProfilePage extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-        })
+        });
+        editpassword.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                pd.setMessage("Changing Password");
+                showPasswordChangeDailog();
+            }
+        });
     }
+    @Override
+    protected void onStart() {
+        super.onStart();
+        Query query = databaseReference.orderByChild("email").equalTo(firebaseUser.getEmail());
+        query.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()){
+                    String image = "" + dataSnapshot1.child("image").getValue();
+                    try{
+                        Glide.with(EditProfilePage.this).load(image).into(set);
+                    } catch (Exception e) {
+                }
+            }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+        editpassword.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                pd.setMessage("Changing Password");
+                showPasswordChangeDailog();
+            }
+        });
+    }
+
+    // checking storage permission ,if given then we can add something in our storage
+    private Boolean checkStoragePermission() {
+        boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        return result;
+    }
+
+    // requesting for storage permission
+    private void requestStoragePermission() {
+        requestPermissions(storagePermission, STORAGE_REQUEST);
+    }
+
+    // checking camera permission ,if given then we can click image using our camera
+    private Boolean checkCameraPermission() {
+        boolean result = ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == (PackageManager.PERMISSION_GRANTED);
+        boolean result1 = ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) == (PackageManager.PERMISSION_GRANTED);
+        return result && result1;
+    }
+
+    // requesting for camera permission if not given
+    private void requestCameraPermission() {
+        requestPermissions(cameraPermission, CAMERA_REQUEST);
+    }
+
+    // We will show an alert box where we will write our old and new password
+    private void showPasswordChangeDailog() {
+        View view = LayoutInflater.from(this).inflate(R.layout.dialog_update_password, null);
+        final EditText oldpass = view.findViewById(R.id.oldpasslog);
+        final EditText newpass = view.findViewById(R.id.newpasslog);
+        Button editpass = view.findViewById(R.id.updatepass);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setView(view);
+        final AlertDialog dialog = builder.create();
+        dialog.show();
+        editpass.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String oldp = oldpass.getText().toString().trim();
+                String newp = newpass.getText().toString().trim();
+                if (TextUtils.isEmpty(oldp)) {
+                    Toast.makeText(EditProfilePage.this, "Current Password can't be empty", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                if (TextUtils.isEmpty(newp)) {
+                    Toast.makeText(EditProfilePage.this, "New Password can't be empty", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                dialog.dismiss();
+                updatePassword(oldp, newp);
+            }
+        });
 }
+
+
+    // Now we will check that if old password was authenticated
+    // correctly then we will update the new password
+    private void updatePassword(String oldp, final String newp) {
+        pd.show();
+    }
