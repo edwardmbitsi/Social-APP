@@ -231,4 +231,44 @@ public class EditProfilePage extends AppCompatActivity {
     // correctly then we will update the new password
     private void updatePassword(String oldp, final String newp) {
         pd.show();
+        final FirebaseUser user = firebaseAuth.getCurrentUser();
+        AuthCredential authCredential = EmailAuthProvider.getCredential(user.getEmail(), oldp);
+        user.reauthenticate(authCredential)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        user.updatePassword(newp)
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void aVoid) {
+                                     pd.dismiss();
+                                     Toast.makeText(EditProfilePage.this, "Changed Password", Toast.LENGTH_LONG).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
+                                        pd.dismiss();
+                                        Toast.makeText(EditProfilePage.this, "Failed", Toast.LENGTH_LONG).show();
+                                    }
+                                });
+                    }
+                    }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        pd.dismiss();
+                        Toast.makeText(EditProfilePage.this, "Failed", Toast.LENGTH_LONG).show();
+                    }
+                });
+                }
+                //Updating name
+                private void showNamephoneupdate(final String key) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle("Update" + key);
+
+                // creating a layout to write the new name
+                LinearLayout layout = new LinearLayout(this);
+                layout.setOrientation(LinearLayout.VERTICAL);
+                layout.setPadding(10, 10, 10, 10);
+                fina
+                }
     }
