@@ -269,6 +269,66 @@ public class EditProfilePage extends AppCompatActivity {
                 LinearLayout layout = new LinearLayout(this);
                 layout.setOrientation(LinearLayout.VERTICAL);
                 layout.setPadding(10, 10, 10, 10);
-                fina
-                }
-    }
+                final EditText editText = new EditText(this);
+                editText.setHint("Enter" + key);
+                layout.addView(editText);
+                builder.setView(layout);
+
+                builder.setPositiveButton("Update", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int which) {
+                        final String value = editText.getText().toString().trim();
+                        if (!TextUtils.isEmpty(value)) {
+                            pd.show();
+
+                            // Here we are updating the new name
+                            HashMap<String, Object> result = new HashMap<>();
+                            result.put(key, value);
+                            databaseReference.child(firebaseUser.getUid().updateChildren(result).addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    pd.dismiss();
+
+                                    // after updated we will show updated
+                                    Toast.makeText(EditProfilePage.this, "updated", Toast.LENGTH_LONG).show();
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    pd.dismiss();
+                                    Toast.makeText(EditProfilePage.this, "Unable to update", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                            if (key.equals("name")) {
+                                final DatabaseReference databaser = FirebaseDatabase.getInstance().getReference("Posts");
+                                Query query = databaser.orderByChild("uid").equalTo(uid);
+                                query.addValueEventListener(new ValueEventListener() {
+                                    @Override
+                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                        for (DataSnapshot dataSnapshot1 : dataSnapshot.getChildren()) {
+                                            String child = databaser.getKey();
+                                            dataSnapshot1.getRef().child("uname").setValue(value);
+                                        }
+                                    }
+
+                                    @Override
+                                    public void onCancelled(@NonNull DatabaseError databaseError) {
+
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(EditProfilePage.this, "Unable to update", Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+
+             builder.setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
+                 @Override
+                 public void onClick(DialogInterface dialog, int which){
+                     pd.dismiss();
+                        }
+                    });
+             builder.create().show();
+
+  // Here we are showing image pic dialog where we will select
+  // and image either from camera or gallery
