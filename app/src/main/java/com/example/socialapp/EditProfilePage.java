@@ -332,3 +332,46 @@ public class EditProfilePage extends AppCompatActivity {
 
   // Here we are showing image pic dialog where we will select
   // and image either from camera or gallery
+  private void showImagePicDialog(){
+      String options[] = {"Camera", "Gallery"};
+      AlertDialog.Builder builder = new AlertDialog.Builder(this);
+      builder.setTitle("Pick Image From");
+      builder.setItems(options, new DialogInterface.OnClickListener(){
+      @Override
+      public void onClick(DialogInterface dialog, int which) {
+          // if access is not given then we will request for permission
+          if (which == 0){
+              if (!checkCameraPermission()) {
+                  requestCameraPermission();
+              } else {
+                  pickFromCamera();
+              }
+              } else if (which == 1) {
+          if (!checkStoragePermission()) {
+              requestStoragePermission();
+          } else {
+              pickFromGallery();
+          }
+      }
+      }
+  });
+      builder.create().show();
+  }
+
+  @Override
+  public void onRequestPermissionResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults){
+      switch (requestCode) {
+          case CAMERA_REQUEST: {
+              if (grantResults.length > 0) {
+                  boolean camera_accepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
+                  boolean writeStorageaccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
+                  if (writeStorageaccepted) {
+                      pickFromGallery();
+                  } else {
+                      Toast.makeText(this, "Please Enable Storage Permissions", Toast.LENGTH_LONG).show();
+                  }
+              }
+          }
+          break;
+      }
+  }
