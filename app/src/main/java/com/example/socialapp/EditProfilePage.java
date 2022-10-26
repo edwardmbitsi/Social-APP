@@ -388,3 +388,43 @@ public class EditProfilePage extends AppCompatActivity {
   }
 
   // We will select an image from gallery
+  private void uploadProfileCoverPhoto(final Uri uri){
+      pd.show();
+
+      // We are taking the filepath as storagepath + firebaseauth.getUid()+".png"
+      String filepathname = storagepath + "" + profileOrCoverPhoto + "_" + firebaseUser.getUid();
+      StorageReference storageReference1 = storageReference.child(filepathname);
+      storageReference1.putFile(uri).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+          @Override
+          public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+              Task<Uri> uriTask = taskSnapshot.getStorage().getDownloadUrl();
+              while (!uriTask.isSuccessful());
+
+              // We will get the url of our image using uritask
+              final Uri downloadUri = uriTask.getResult();
+              if (uriTask.isSuccessful()) {
+
+                  // updating our image url into the realtime database
+                  HashMap<String, Object> hashMap = new HashMap<>();
+                  hashMap.put(profileOrCoverPhoto, downloadUri.toString());
+                  databaseReference.child(firebaseUser.getUid()).updateChildren(hashMap).addOnSuccessListener(new OnSuccessListener<Void>() {
+                      @Override
+                      public void onSuccess(Void avoid) {
+                       pd.dismiss();
+                       Toast.makeText(EditProfilePage.this, "Updated", Toast.LENGTH_LONG).show();
+                      }
+                  }).addOnFailureListener(new onFailureListener() {
+                  @Override
+                  public void onFailure(@NonNull Exception e) {
+                      pd.dismiss();
+                      Toast.makeText(EditProfilePage.this, "Error Updating", Toast.LENGTH_LONG).show();
+                  }
+                  });
+              } else {
+                  pd.dismiss();
+                  Toast.makeText(EditProfilePage.this, "Error", Toast.LENGTH_LONG).show();
+              }
+              }
+          })
+      })
+  }
